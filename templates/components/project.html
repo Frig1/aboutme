@@ -1,0 +1,28 @@
+<article class="motion-reveal border-b border-line py-10 md:py-12 lg:pb-16" data-reveal>
+  <div class="mb-5 flex gap-4 font-mono text-xs leading-normal text-muted md:gap-6">
+    <span class="w-1/4 text-accent">0{{ loop.index }}</span>
+    <span class="flex-1">{{ project.category }}</span>
+    <span>{{ project.year }}</span>
+  </div>
+  <figure class="motion-clip m-0 aspect-video overflow-hidden bg-surface">
+    <img class="h-full w-full object-cover" src="{{ project.image }}" alt="{{ project.alt }}" loading="lazy" width="1200" height="750" />
+  </figure>
+  <div class="mt-6 md:grid md:grid-cols-2 md:gap-6 lg:gap-10">
+    <div>
+      <h3 class="m-0 text-xl leading-snug font-medium tracking-tight">{{ project.title }}</h3>
+      {% match project.href %}
+      {% when Some with (href) %}
+      {% call links::project(href, "Visit project") %}
+      {% when None %}
+      {% endmatch %}
+    </div>
+    <details class="group mt-3 md:mt-0">
+      <summary class="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+        <span class="line-clamp-2 text-sm leading-relaxed text-muted group-open:line-clamp-none">{{ project.summary }}</span>
+        <span class="mt-2 inline-block font-mono text-xs leading-normal text-ink underline decoration-line underline-offset-4">
+          <span class="group-open:hidden">Read more</span><span class="hidden group-open:inline">Read less</span>
+        </span>
+      </summary>
+    </details>
+  </div>
+</article>

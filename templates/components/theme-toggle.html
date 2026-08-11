@@ -1,0 +1,8 @@
+{% macro render(modifier) %}
+<button class="has-tooltip relative grid size-11 cursor-pointer place-items-center border-0 bg-transparent text-ink {{ modifier }}" type="button" aria-label="Theme: match device" data-theme-toggle>
+  <svg class="size-4 fill-none stroke-current stroke-1" data-theme-icon="system" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2"></rect><path d="M8 22h8M12 18v4"></path></svg>
+  <svg class="size-4 fill-none stroke-current stroke-1" data-theme-icon="light" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+  <svg class="size-4 fill-none stroke-current stroke-1" data-theme-icon="dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 15.2A8 8 0 0 1 8.8 4 8.2 8.2 0 1 0 20 15.2Z"></path></svg>
+  <span class="tooltip top-1/2 left-full -translate-y-1/2" role="tooltip" data-tooltip>Theme: match device</span>
+</button>
+{% endmacro %}

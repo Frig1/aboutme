@@ -1,0 +1,15 @@
+{
+  "name": "aboutme-styles",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --kill-others -n css,server -c cyan,magenta \"tailwindcss -i ./styles/input.css -o ./static/app.css --watch --poll=200\" \"cargo watch --poll -w src -w templates -w content -w static -x run\"",
+    "build:css": "tailwindcss -i ./styles/input.css -o ./static/app.css --minify",
+    "watch:css": "tailwindcss -i ./styles/input.css -o ./static/app.css --watch --poll=200"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.11",
+    "concurrently": "^9.2.1",
+    "geist": "^1.7.2",
+    "tailwindcss": "^4.1.11"
+  }
+}

@@ -1,0 +1,9 @@
+[[project]]
+slug = "smv"
+title = "Scuola di Musica Voghenza"
+category = "Web Experience"
+year = "2025"
+summary = "A modern website for a local music school, designed around clarity and simplicity. The experience brings together courses, teachers, school information, and enrollment details in an intuitive interface, with a complete online registration system built directly into the site."
+image = "/static/projects/smv.png"
+href = "https://scuoladimusicavoghenza.it"
+alt = "Identity artwork for Scuola di Musica Voghenza"

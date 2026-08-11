@@ -1,0 +1,127 @@
+{% import "components/links.html" as links %}
+{% import "components/theme-toggle.html" as theme %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f4f0" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b0b0a" media="(prefers-color-scheme: dark)" />
+    <meta name="description" content="Frig is a full-stack developer creating calm, thoughtful digital experiences." />
+    <title>Frig — Developer & Tinkerer</title>
+    <script>
+      try {
+        const theme = localStorage.getItem("theme");
+        if (theme) document.documentElement.dataset.theme = theme;
+      } catch (_) {}
+    </script>
+    <link rel="stylesheet" href="/static/app.css" />
+    <script defer src="/static/app.js"></script>
+  </head>
+  <body class="min-h-screen bg-canvas font-sans text-ink antialiased">
+    <a class="fixed top-3 left-3 z-50 -translate-y-20 bg-ink px-4 py-2.5 text-canvas focus:translate-y-0" href="#main">Skip to content</a>
+
+    <header class="sticky top-0 z-50 flex h-18 items-center justify-between border-b border-line bg-canvas/90 px-5 backdrop-blur-md md:hidden" aria-label="Mobile navigation">
+      <a class="inline-flex text-lg font-semibold tracking-tight" href="#home" aria-label="Frig, home">Frig<span class="text-accent">.</span></a>
+      <div class="flex items-center gap-0.5">
+        {% call theme::render("[&_.tooltip]:hidden") %}
+        <details class="group" data-mobile-menu>
+          <summary class="relative grid size-11 cursor-pointer list-none place-items-center [&::-webkit-details-marker]:hidden" aria-label="Open navigation">
+            <span class="absolute h-px w-4 bg-ink -translate-y-1 transition-transform duration-200 group-open:translate-y-0 group-open:rotate-45"></span>
+            <span class="absolute h-px w-4 bg-ink translate-y-1 transition-transform duration-200 group-open:translate-y-0 group-open:-rotate-45"></span>
+          </summary>
+          <nav class="fixed inset-x-0 top-18 grid border-b border-line bg-canvas px-5 pt-4 pb-6" aria-label="Primary">
+            <a class="flex min-h-12 items-center text-lg" href="#home">Home</a>
+            <a class="flex min-h-12 items-center text-lg" href="#work">Work</a>
+            <a class="flex min-h-12 items-center text-lg" href="#about">About</a>
+            <a class="flex min-h-12 items-center text-lg" href="#contact">Contact</a>
+          </nav>
+        </details>
+      </div>
+    </header>
+
+    <div class="mx-auto w-full max-w-5xl px-5 md:flex md:gap-12 md:px-6 lg:gap-16">
+      <aside class="sticky top-0 hidden h-screen w-32 shrink-0 flex-col justify-between py-12 md:flex lg:w-44" aria-label="Site navigation">
+        <div>
+          <a class="inline-flex text-lg font-semibold tracking-tight" href="#home" aria-label="Frig, home">Frig<span class="text-accent">.</span></a>
+          <nav class="relative mt-16 grid pl-4" aria-label="Primary">
+            <span class="absolute top-4 left-0 size-1 rounded-full bg-accent transition-transform duration-300" aria-hidden="true" data-nav-indicator></span>
+            <a class="flex h-10 items-center text-sm text-muted transition-colors duration-150" data-section="home" data-nav-link data-active="true" href="#home">Home</a>
+            <a class="flex h-10 items-center text-sm text-muted transition-colors duration-150" data-section="work" data-nav-link href="#work">Work</a>
+            <a class="flex h-10 items-center text-sm text-muted transition-colors duration-150" data-section="about" data-nav-link href="#about">About</a>
+            <a class="flex h-10 items-center text-sm text-muted transition-colors duration-150" data-section="contact" data-nav-link href="#contact">Contact</a>
+          </nav>
+        </div>
+
+        <div class="grid gap-3 font-mono text-xs leading-normal text-muted">
+          <a href="#contact"><span class="mr-1.5 inline-block size-1.5 rounded-full bg-accent" aria-hidden="true"></span>Available for work</a>
+          <p class="m-0"><span data-time>--:--</span> CET</p>
+          {% call theme::render("-ml-3 mt-0.5") %}
+        </div>
+      </aside>
+
+      <main class="min-w-0 max-w-3xl flex-1" id="main">
+        <section class="relative flex min-h-[calc(100svh-4.5rem)] flex-col justify-start pt-20 pb-20 md:min-h-[92svh] md:pt-28 md:pb-24 lg:pt-36 lg:pb-28" id="home" aria-labelledby="hero-title">
+          <p class="motion-enter m-0 font-mono text-xs leading-normal tracking-wide text-muted">Full-stack developer · Italy</p>
+          <h1 class="motion-enter mt-7 max-w-2xl text-5xl leading-none font-medium tracking-tighter md:text-6xl lg:text-7xl" id="hero-title">I build useful things<br />for the web.</h1>
+          <p class="motion-enter mt-8 max-w-xl text-base leading-relaxed text-muted md:text-lg">
+            I turn curious ideas into clear, responsive products—carefully balancing how they work with how they feel.
+          </p>
+          <div class="motion-enter mt-7 flex gap-7">
+            {% call links::text("mailto:contact@frig.dev", "Email") %}
+            {% call links::text("#about", "About") %}
+          </div>
+          <a class="motion-enter mt-12 flex w-full justify-between font-mono text-xs leading-normal text-muted" href="#work" aria-label="Scroll to selected work">
+            <span>Selected work</span><span aria-hidden="true">↓</span>
+          </a>
+        </section>
+
+        <section class="py-20 md:py-24 lg:py-28" id="work" aria-labelledby="work-title">
+          <header class="motion-reveal mb-12 md:flex md:items-start md:gap-6 lg:mb-16" data-reveal>
+            <p class="m-0 font-mono text-xs leading-normal tracking-wide text-muted md:w-40 md:shrink-0">Selected Work</p>
+            <h2 class="mt-5 text-3xl leading-tight font-medium tracking-tight md:mt-0 md:text-4xl" id="work-title">A few things I’ve shaped.</h2>
+          </header>
+
+          <div class="border-t border-line">
+            {% for project in projects %}
+              {% include "components/project.html" %}
+            {% endfor %}
+          </div>
+        </section>
+
+        <section class="border-b border-line py-20 md:py-24 lg:py-28" id="about" aria-labelledby="about-title">
+          <p class="motion-reveal m-0 font-mono text-xs leading-normal tracking-wide text-muted" data-reveal>About</p>
+          <div class="mt-7 md:mt-10 md:grid md:grid-cols-2 md:gap-10 lg:gap-16">
+            <h2 class="motion-reveal m-0 text-3xl leading-tight font-medium tracking-tight md:text-4xl" id="about-title" data-reveal>Curious by nature.<br />Deliberate by practice.</h2>
+            <div class="motion-reveal mt-9 text-base leading-relaxed text-muted md:mt-0" data-reveal>
+              <p class="mb-5">
+                I started coding at fourteen, first building Discord bots and then moving deeper into the web. Today I enjoy shaping products end to end, from the smallest interaction to the systems behind it.
+              </p>
+              <p class="mb-5">
+                I care about simple interfaces, useful motion, and technical choices that stay understandable long after launch.
+              </p>
+              <ul class="mt-9 flex list-none flex-wrap gap-x-4 gap-y-2 p-0 font-mono text-xs leading-normal text-ink" aria-label="Selected skills">
+                <li class="before:mr-1.5 before:text-accent before:content-['·']">TypeScript</li><li class="before:mr-1.5 before:text-accent before:content-['·']">Rust</li><li class="before:mr-1.5 before:text-accent before:content-['·']">React</li><li class="before:mr-1.5 before:text-accent before:content-['·']">Next.js</li><li class="before:mr-1.5 before:text-accent before:content-['·']">Node.js</li><li class="before:mr-1.5 before:text-accent before:content-['·']">PostgreSQL</li><li class="before:mr-1.5 before:text-accent before:content-['·']">Product UI</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="flex min-h-[70svh] flex-col justify-center py-20 md:min-h-[76svh] md:py-24 lg:py-28" id="contact" aria-labelledby="contact-title">
+          <p class="motion-reveal m-0 font-mono text-xs leading-normal tracking-wide text-muted" data-reveal>Contact</p>
+          <h2 class="motion-reveal mt-7 mb-10 text-5xl leading-none font-medium tracking-tighter md:text-6xl lg:text-7xl" id="contact-title" data-reveal>Have something<br />in mind?</h2>
+          <div class="motion-reveal flex flex-wrap items-start gap-5 md:items-center md:gap-6" data-reveal>
+            {% call links::text("https://cal.com/frig.dev/discovery-call", "Book a call") %}
+            {% call links::text("mailto:contact@frig.dev", "contact@frig.dev") %}
+          </div>
+        </section>
+
+        <footer class="grid min-h-24 grid-cols-2 items-center border-t border-line font-mono text-xs leading-normal text-muted md:grid-cols-3">
+          <p class="m-0">© <span data-year>2026</span> Frig</p>
+          <div class="justify-self-end md:justify-self-center">{% include "components/social-links.html" %}</div>
+          <p class="m-0 hidden text-right md:block"><span data-time>--:--</span> CET</p>
+        </footer>
+      </main>
+    </div>
+  </body>
+</html>
