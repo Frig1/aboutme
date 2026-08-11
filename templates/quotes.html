@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block head_meta %}<meta name="robots" content="noindex, nofollow" />{% endblock %}
+{% block title %}Quotes — Frig{% endblock %}
+{% block main %}
+    <main class="min-w-0 max-w-3xl flex-1" id="main" tabindex="-1" hx-history-elt hx-history="false">
+      <div class="py-16 md:py-24">
+      <header class="mb-14 md:mb-18">
+        <p class="m-0 font-mono text-xs tracking-wide text-muted">Client area</p>
+        <h1 class="mt-5 text-4xl leading-none font-medium tracking-tight md:text-5xl">Your quotes</h1>
+        <p class="mt-5 max-w-xl leading-relaxed text-muted">Review the scope, estimates, and pricing prepared for your projects.</p>
+      </header>
+
+      {% if quotes.is_empty() %}
+        <section class="border-y border-line py-16 text-center" aria-labelledby="empty-title">
+          <p class="font-mono text-xs text-muted">No documents</p>
+          <h2 class="mt-4 text-2xl font-medium tracking-tight" id="empty-title">No quotes yet.</h2>
+          <p class="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">When a quote is ready, it will appear here.</p>
+        </section>
+      {% else %}
+        <div class="border-t border-line">
+          {% for quote in quotes %}
+            <a class="group grid gap-5 border-b border-line py-7 transition-colors hover:bg-surface/50 sm:grid-cols-[1fr_auto] sm:items-end sm:px-5" href="/quotes/{{ quote.id }}" hx-boost="true">
+              <div class="min-w-0">
+                <div class="flex items-center gap-3 font-mono text-xs text-muted">
+                  <span>{{ quote.reference }}</span>
+                  <span aria-hidden="true">·</span>
+                  <span>Updated {{ quote.updated_at }}</span>
+                </div>
+                <h2 class="mt-4 text-2xl font-medium tracking-tight transition-colors group-hover:text-accent">{{ quote.title }}</h2>
+                <p class="mt-3 line-clamp-2 max-w-2xl text-sm leading-relaxed text-muted">{{ quote.description }}</p>
+              </div>
+              <span class="font-mono text-xs text-muted transition-transform group-hover:translate-x-1" aria-hidden="true">Open →</span>
+            </a>
+          {% endfor %}
+        </div>
+      {% endif %}
+      </div>
+    </main>
+{% endblock %}

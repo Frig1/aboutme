@@ -1,0 +1,25 @@
+{% macro render(account, modifier, menu_id) %}
+  <div class="{{ modifier }}">
+    {% match account %}
+      {% when Some with (user) %}
+        <button class="flex min-h-11 max-w-36 cursor-pointer items-center gap-2 border-0 bg-transparent p-0 font-sans text-sm text-ink" type="button" popovertarget="{{ menu_id }}" aria-label="Open account menu">
+          {% match user.avatar_url %}
+            {% when Some with (avatar_url) %}
+              <img class="size-7 shrink-0 rounded-full bg-surface object-cover" src="{{ avatar_url }}" alt="" width="28" height="28" referrerpolicy="no-referrer" />
+            {% when None %}
+              <span class="grid size-7 shrink-0 place-items-center rounded-full bg-surface font-mono text-xs" aria-hidden="true">{{ user.initial }}</span>
+          {% endmatch %}
+          <span class="truncate">{{ user.display_name }}</span>
+        </button>
+        <div class="fixed inset-auto z-50 m-0 w-44 border border-line bg-canvas p-1 text-ink shadow-sm" id="{{ menu_id }}" popover data-account-popover>
+          <p class="truncate px-3 py-2 text-xs text-muted">{{ user.display_name }}</p>
+          <a class="flex min-h-10 w-full items-center px-3 font-sans text-sm text-ink hover:bg-surface" href="/quotes" hx-boost="true">Quotes</a>
+          <form action="/logout" method="post">
+            <button class="min-h-10 w-full cursor-pointer border-0 bg-transparent px-3 text-left font-sans text-sm text-ink hover:bg-surface" type="submit">Logout</button>
+          </form>
+        </div>
+      {% when None %}
+        <a class="inline-flex min-h-11 items-center font-mono text-xs text-muted transition-colors hover:text-ink" href="/auth/discord">Login</a>
+    {% endmatch %}
+  </div>
+{% endmacro %}

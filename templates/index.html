@@ -1,66 +1,16 @@
+{% extends "base.html" %}
 {% import "components/links.html" as links %}
-{% import "components/theme-toggle.html" as theme %}
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f5f4f0" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0b0b0a" media="(prefers-color-scheme: dark)" />
-    <meta name="description" content="Frig is a full-stack developer creating calm, thoughtful digital experiences." />
-    <title>Frig — Developer & Tinkerer</title>
-    <script>
-      try {
-        const theme = localStorage.getItem("theme");
-        if (theme) document.documentElement.dataset.theme = theme;
-      } catch (_) {}
-    </script>
-    <link rel="stylesheet" href="/static/app.css" />
-    <script defer src="/static/app.js"></script>
-  </head>
-  <body class="min-h-screen bg-canvas font-sans text-ink antialiased">
-    <a class="fixed top-3 left-3 z-50 -translate-y-20 bg-ink px-4 py-2.5 text-canvas focus:translate-y-0" href="#main">Skip to content</a>
 
-    <header class="sticky top-0 z-50 flex h-18 items-center justify-between border-b border-line bg-canvas/90 px-5 backdrop-blur-md md:hidden" aria-label="Mobile navigation">
-      <a class="inline-flex text-lg font-semibold tracking-tight" href="#home" aria-label="Frig, home">Frig<span class="text-accent">.</span></a>
-      <div class="flex items-center gap-0.5">
-        {% call theme::render("[&_.tooltip]:hidden") %}
-        <details class="group" data-mobile-menu>
-          <summary class="relative grid size-11 cursor-pointer list-none place-items-center [&::-webkit-details-marker]:hidden" aria-label="Open navigation">
-            <span class="absolute h-px w-4 bg-ink -translate-y-1 transition-transform duration-200 group-open:translate-y-0 group-open:rotate-45"></span>
-            <span class="absolute h-px w-4 bg-ink translate-y-1 transition-transform duration-200 group-open:translate-y-0 group-open:-rotate-45"></span>
-          </summary>
-          <nav class="fixed inset-x-0 top-18 grid border-b border-line bg-canvas px-5 pt-4 pb-6" aria-label="Primary">
-            <a class="flex min-h-12 items-center text-lg" href="#home">Home</a>
-            <a class="flex min-h-12 items-center text-lg" href="#work">Work</a>
-            <a class="flex min-h-12 items-center text-lg" href="#about">About</a>
-            <a class="flex min-h-12 items-center text-lg" href="#contact">Contact</a>
-          </nav>
-        </details>
-      </div>
-    </header>
-
-    <div class="mx-auto w-full max-w-5xl px-5 md:flex md:gap-12 md:px-6 lg:gap-16">
-      <aside class="sticky top-0 hidden h-screen w-32 shrink-0 flex-col justify-between py-12 md:flex lg:w-44" aria-label="Site navigation">
-        <div>
-          <a class="inline-flex text-lg font-semibold tracking-tight" href="#home" aria-label="Frig, home">Frig<span class="text-accent">.</span></a>
-          <nav class="relative mt-16 grid pl-4" aria-label="Primary">
-            <span class="absolute top-4 left-0 size-1 rounded-full bg-accent transition-transform duration-300" aria-hidden="true" data-nav-indicator></span>
-            <a class="flex h-10 items-center text-sm text-muted transition-colors duration-150" data-section="home" data-nav-link data-active="true" href="#home">Home</a>
-            <a class="flex h-10 items-center text-sm text-muted transition-colors duration-150" data-section="work" data-nav-link href="#work">Work</a>
-            <a class="flex h-10 items-center text-sm text-muted transition-colors duration-150" data-section="about" data-nav-link href="#about">About</a>
-            <a class="flex h-10 items-center text-sm text-muted transition-colors duration-150" data-section="contact" data-nav-link href="#contact">Contact</a>
-          </nav>
-        </div>
-
-        <div class="grid gap-3 font-mono text-xs leading-normal text-muted">
-          <a href="#contact"><span class="mr-1.5 inline-block size-1.5 rounded-full bg-accent" aria-hidden="true"></span>Available for work</a>
-          <p class="m-0"><span data-time>--:--</span> CET</p>
-          {% call theme::render("-ml-3 mt-0.5") %}
-        </div>
-      </aside>
-
-      <main class="min-w-0 max-w-3xl flex-1" id="main">
+{% block head_meta %}<meta name="description" content="Frig is a full-stack developer creating calm, thoughtful digital experiences." />{% endblock %}
+{% block title %}Frig — Developer & Tinkerer{% endblock %}
+{% block main %}
+      <main class="min-w-0 max-w-3xl flex-1" id="main" tabindex="-1" hx-history-elt>
+        {% if auth_error %}
+          <p class="fixed top-20 right-5 z-40 m-0 border border-line bg-canvas px-3 py-2 font-mono text-xs text-muted md:top-5" role="alert">Discord login failed. Try again.</p>
+        {% endif %}
+        {% if auth_cancelled %}
+          <p class="fixed top-20 right-5 z-40 m-0 border border-line bg-canvas px-3 py-2 font-mono text-xs text-muted md:top-5" role="status">Discord login cancelled.</p>
+        {% endif %}
         <section class="relative flex min-h-[calc(100svh-4.5rem)] flex-col justify-start pt-20 pb-20 md:min-h-[92svh] md:pt-28 md:pb-24 lg:pt-36 lg:pb-28" id="home" aria-labelledby="hero-title">
           <p class="motion-enter m-0 font-mono text-xs leading-normal tracking-wide text-muted">Full-stack developer · Italy</p>
           <h1 class="motion-enter mt-7 max-w-2xl text-5xl leading-none font-medium tracking-tighter md:text-6xl lg:text-7xl" id="hero-title">I build useful things<br />for the web.</h1>
@@ -122,6 +72,4 @@
           <p class="m-0 hidden text-right md:block"><span data-time>--:--</span> CET</p>
         </footer>
       </main>
-    </div>
-  </body>
-</html>
+{% endblock %}

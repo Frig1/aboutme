@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block head_meta %}<meta name="robots" content="noindex, nofollow" />{% endblock %}
+{% block title %}{{ quote.reference }} — {{ quote.title }}{% endblock %}
+{% block main %}
+    <main class="min-w-0 max-w-3xl flex-1" id="main" tabindex="-1" hx-history-elt hx-history="false">
+      <div class="py-6 md:py-12">
+        <a class="inline-flex items-center gap-2 font-mono text-xs text-muted transition-colors hover:text-ink" href="/quotes" hx-boost="true"><span aria-hidden="true">←</span> Quotes</a>
+        <article class="py-8 md:py-16">
+        <header class="border-b border-line pb-12 md:pb-16">
+          <div class="flex items-start justify-between gap-8">
+            <a class="inline-flex text-xl font-semibold tracking-tight" href="/" aria-label="Frig, home">Frig<span class="text-accent">.</span></a>
+            <div class="text-right">
+              <p class="font-mono text-xs uppercase tracking-widest text-muted">Quote</p>
+              <p class="mt-2 font-mono text-sm tabular-nums">{{ quote.reference }}</p>
+            </div>
+          </div>
+
+          <div class="mt-16 max-w-2xl md:mt-24">
+            <h1 class="text-4xl leading-tight font-medium tracking-tight md:text-5xl">{{ quote.title }}</h1>
+            <p class="mt-6 whitespace-pre-line text-base leading-relaxed text-muted md:text-lg">{{ quote.description }}</p>
+          </div>
+
+          <dl class="mt-12 grid gap-7 border-t border-line pt-8 text-sm sm:grid-cols-3 md:mt-16">
+            <div>
+              <dt class="font-mono text-xs text-muted">Recipient</dt>
+              <dd class="mt-2 font-medium">
+                {% match account %}
+                  {% when Some with (user) %}{{ user.display_name }}
+                  {% when None %}—
+                {% endmatch %}
+              </dd>
+            </div>
+            <div>
+              <dt class="font-mono text-xs text-muted">Created</dt>
+              <dd class="mt-2 tabular-nums">{{ quote.created_at }}</dd>
+            </div>
+            <div>
+              <dt class="font-mono text-xs text-muted">Updated</dt>
+              <dd class="mt-2 tabular-nums">{{ quote.updated_at }}</dd>
+            </div>
+          </dl>
+        </header>
+
+        <section class="py-12 md:py-16" aria-labelledby="sections-title">
+          <div class="mb-8 flex items-end justify-between gap-6">
+            <h2 class="text-2xl font-medium tracking-tight" id="sections-title">Scope of work</h2>
+            <p class="hidden font-mono text-xs text-muted sm:block">Estimate · Amount</p>
+          </div>
+
+          <div class="border-t border-line">
+            {% for section in quote.sections %}
+              <section class="grid gap-6 border-b border-line py-8 md:grid-cols-[2.5rem_1fr_auto] md:gap-8" aria-labelledby="section-{{ section.number }}">
+                <p class="font-mono text-xs text-muted">{{ section.number }}</p>
+                <div>
+                  <h3 class="text-xl font-medium tracking-tight" id="section-{{ section.number }}">{{ section.title }}</h3>
+                  <p class="mt-4 whitespace-pre-line text-sm leading-relaxed text-muted">{{ section.description }}</p>
+                </div>
+                <dl class="grid grid-cols-2 gap-8 md:block md:min-w-32 md:text-right">
+                  <div>
+                    <dt class="font-mono text-xs text-muted md:hidden">Estimate</dt>
+                    <dd class="mt-1 whitespace-nowrap font-mono text-xs text-muted md:mt-0">{{ section.estimate }}</dd>
+                  </div>
+                  <div class="md:mt-4">
+                    <dt class="font-mono text-xs text-muted md:hidden">Amount</dt>
+                    <dd class="mt-1 whitespace-nowrap text-base font-medium tabular-nums md:mt-0">{{ section.price }}</dd>
+                  </div>
+                </dl>
+              </section>
+            {% endfor %}
+          </div>
+        </section>
+
+        <footer class="grid gap-10 border-t-2 border-ink pt-8 sm:grid-cols-[1fr_auto] sm:items-start">
+          <div>
+            <p class="font-mono text-xs text-muted">Quote total</p>
+            <p class="mt-3 max-w-md text-xs leading-relaxed text-muted">Amounts are shown in euros. Listed hours are an estimate of the work involved.</p>
+          </div>
+          <p class="text-4xl font-medium tracking-tight tabular-nums sm:text-right">{{ quote.total }}</p>
+        </footer>
+        </article>
+      </div>
+    </main>
+{% endblock %}
