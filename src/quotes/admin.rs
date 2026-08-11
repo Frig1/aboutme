@@ -1,6 +1,7 @@
 use diesel::{
     Connection, ExpressionMethods, OptionalExtension, QueryDsl, RunQueryDsl, insert_into,
 };
+use serde::Serialize;
 
 use crate::{
     auth::{self, Auth},
@@ -13,8 +14,10 @@ use super::{
     reference, section_rows,
 };
 
+#[derive(Serialize)]
 pub struct AdminQuoteListItem {
     pub id: String,
+    pub discord_id: String,
     pub reference: String,
     pub title: String,
     pub recipient_name: String,
@@ -74,6 +77,7 @@ pub async fn list(auth: &Auth) -> QuoteResult<Vec<AdminQuoteListItem>> {
                 recipient_avatar: avatar_hash.map(|hash| avatar_url(&discord_id, &hash)),
                 recipient_initial: initial(&name),
                 recipient_name: name,
+                discord_id,
                 id,
                 title,
                 is_visible,

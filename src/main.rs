@@ -8,6 +8,7 @@ use std::{
 
 mod admin;
 mod auth;
+mod mcp;
 mod quotes;
 mod schema;
 
@@ -119,6 +120,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         projects: Arc::new(load_projects()?),
         auth: auth::Auth::from_env()?,
     });
+    let mcp_token = env::var("MCP_TOKEN")?;
+    if mcp_token.len() < 32 || !mcp_token.bytes().all(|byte| byte.is_ascii_graphic()) {
+        return Err(Error::new(
+            ErrorKind::InvalidInput,
+            "MCP_TOKEN must contain at least 32 non-whitespace ASCII characters",
+        )
+        .into());
+    }
+    let mcp = mcp::router(state.auth.clone(), mcp_token);
 
     let app = Router::new()
         .route("/", get(index))
@@ -128,6 +138,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         .route("/quotes", get(quotes_index))
         .route("/quotes/{id}", get(quote_detail))
         .merge(admin::router())
+        .merge(mcp)
         .nest_service("/static", ServeDir::new("static"))
         .with_state(state);
 

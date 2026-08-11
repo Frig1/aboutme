@@ -15,7 +15,7 @@ pub use admin::{
     AdminQuoteListItem, RecipientView, delete, edit_form, list as admin_list, recipient, save,
     toggle_visibility,
 };
-pub use form::QuoteForm;
+pub use form::{QuoteForm, QuoteFormSection};
 
 type QuoteResult<T> = Result<T, Box<dyn Error + Send + Sync>>;
 type SectionRow = (String, String, i32, Option<i32>, i64);
