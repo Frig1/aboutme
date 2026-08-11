@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block head_meta %}<meta name="robots" content="noindex, nofollow" />{% endblock %}
+{% block title %}{% match form.id %}{% when Some with (_) %}Edit quote{% when None %}New quote{% endmatch %} — Frig{% endblock %}
+{% block main %}
+  <main class="min-w-0 flex-1" id="main" tabindex="-1" hx-history-elt hx-history="false">
+    <div class="py-6 md:py-12">
+      <a class="inline-flex items-center gap-2 font-mono text-xs text-muted transition-colors hover:text-ink" href="/admin/quotes" hx-boost="true"><span aria-hidden="true">←</span> Dashboard</a>
+      <header class="py-10 md:py-14">
+        <p class="font-mono text-xs text-muted">{% match form.id %}{% when Some with (_) %}Edit document{% when None %}New document{% endmatch %}</p>
+        <h1 class="mt-4 text-4xl font-medium tracking-tight">{% match form.id %}{% when Some with (_) %}Edit quote{% when None %}Create quote{% endmatch %}</h1>
+      </header>
+
+      {% match form.id %}
+        {% when Some with (id) %}<form action="/admin/quotes/{{ id }}/edit" method="post" data-quote-form>
+        {% when None %}<form action="/admin/quotes/new" method="post" data-quote-form>
+      {% endmatch %}
+        {% match form.error %}
+          {% when Some with (error) %}<p class="mb-8 border border-line bg-surface px-4 py-3 text-sm" role="alert">{{ error }}</p>
+          {% when None %}
+        {% endmatch %}
+
+        <section class="grid gap-6 border-y border-line py-8" aria-labelledby="details-title">
+          <h2 class="text-xl font-medium tracking-tight" id="details-title">Details</h2>
+          <label class="grid gap-2 text-sm">Discord ID
+            <input class="h-11 border border-line bg-transparent px-3 outline-none focus:border-accent" name="discord_id" value="{{ form.discord_id }}" inputmode="numeric" pattern="[0-9]{17,20}" required hx-get="/admin/recipient" hx-trigger="input changed delay:300ms" hx-include="this" hx-target="#recipient-preview" hx-select="unset" hx-swap="innerHTML" />
+          </label>
+          <div id="recipient-preview">
+            {% match recipient %}
+              {% when Some with (recipient) %}{% include "admin/recipient.html" %}
+              {% when None %}<p class="font-mono text-xs text-muted">Enter a Discord ID to identify an existing account.</p>
+            {% endmatch %}
+          </div>
+          <label class="grid gap-2 text-sm">Title
+            <input class="h-11 border border-line bg-transparent px-3 outline-none focus:border-accent" name="title" value="{{ form.title }}" required />
+          </label>
+          <label class="grid gap-2 text-sm">Description
+            <textarea class="min-h-28 border border-line bg-transparent p-3 outline-none focus:border-accent" name="description" required>{{ form.description }}</textarea>
+          </label>
+          <label class="flex min-h-11 cursor-pointer items-center gap-3 text-sm">
+            <input class="size-4 accent-accent" type="checkbox" name="is_visible"{% if form.is_visible %} checked{% endif %} />
+            Visible to recipient
+          </label>
+        </section>
+
+        <section class="py-10" aria-labelledby="sections-title">
+          <h2 class="mb-6 text-xl font-medium tracking-tight" id="sections-title">Sections</h2>
+          <div class="grid gap-6" data-sections>
+            {% for section in form.sections %}
+              <fieldset class="border border-line p-5" data-quote-section>
+                <div class="mb-5 flex items-center justify-between gap-4">
+                  <legend class="font-mono text-xs text-muted">Section <span data-section-number>{{ loop.index }}</span></legend>
+                  <div class="flex gap-1">
+                    <button class="grid size-9 cursor-pointer place-items-center hover:bg-surface" type="button" data-move-up aria-label="Move section up">↑</button>
+                    <button class="grid size-9 cursor-pointer place-items-center hover:bg-surface" type="button" data-move-down aria-label="Move section down">↓</button>
+                    <button class="min-h-9 cursor-pointer px-2 text-xs text-muted hover:bg-surface hover:text-ink" type="button" data-remove-section>Remove</button>
+                  </div>
+                </div>
+                <div class="grid gap-5">
+                  <label class="grid gap-2 text-sm">Title<input class="h-11 border border-line bg-transparent px-3 outline-none focus:border-accent" name="sections.{{ loop.index0 }}.title" value="{{ section.title }}" required /></label>
+                  <label class="grid gap-2 text-sm">Description<textarea class="min-h-24 border border-line bg-transparent p-3 outline-none focus:border-accent" name="sections.{{ loop.index0 }}.description" required>{{ section.description }}</textarea></label>
+                  <div class="grid gap-5 sm:grid-cols-3">
+                    <label class="grid gap-2 text-sm">Min hours<input class="h-11 border border-line bg-transparent px-3 outline-none focus:border-accent" type="number" name="sections.{{ loop.index0 }}.min_hours" value="{{ section.min_hours }}" min="1" step="1" required data-min-hours /></label>
+                    <label class="grid gap-2 text-sm">Max hours<input class="h-11 border border-line bg-transparent px-3 outline-none focus:border-accent" type="number" name="sections.{{ loop.index0 }}.max_hours" value="{{ section.max_hours }}" min="1" step="1" data-max-hours /></label>
+                    <label class="grid gap-2 text-sm">Price (€)<input class="h-11 border border-line bg-transparent px-3 outline-none focus:border-accent" type="number" name="sections.{{ loop.index0 }}.price_euros" value="{{ section.price_euros }}" min="0" step="1" required data-price-euros /></label>
+                  </div>
+                  <p class="font-mono text-xs text-muted">Hourly: <output data-section-rate>—</output></p>
+                </div>
+              </fieldset>
+            {% endfor %}
+          </div>
+          <button class="mt-6 min-h-11 w-full cursor-pointer border border-dashed border-line px-4 text-sm hover:bg-surface" type="button" data-add-section>Add section</button>
+        </section>
+
+        <footer class="sticky bottom-0 -mx-5 flex flex-col gap-4 border-t border-line bg-canvas/95 px-5 py-5 backdrop-blur-md sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p class="font-mono text-xs text-muted">Total</p>
+            <p class="mt-1 text-xl font-medium tabular-nums"><output data-total-price>€ 0,00</output> <span class="ml-2 font-mono text-xs font-normal text-muted"><output data-total-rate>—</output></span></p>
+          </div>
+          <div class="flex gap-3">
+            <a class="inline-flex min-h-11 items-center px-4 text-sm hover:bg-surface" href="/admin/quotes" hx-boost="true">Cancel</a>
+            <button class="min-h-11 cursor-pointer bg-ink px-6 text-sm font-medium text-canvas transition-opacity hover:opacity-80" type="submit">Save quote</button>
+          </div>
+        </footer>
+      </form>
+
+      <template data-section-template>
+        <fieldset class="border border-line p-5" data-quote-section>
+          <div class="mb-5 flex items-center justify-between gap-4">
+            <legend class="font-mono text-xs text-muted">Section <span data-section-number></span></legend>
+            <div class="flex gap-1">
+              <button class="grid size-9 cursor-pointer place-items-center hover:bg-surface" type="button" data-move-up aria-label="Move section up">↑</button>
+              <button class="grid size-9 cursor-pointer place-items-center hover:bg-surface" type="button" data-move-down aria-label="Move section down">↓</button>
+              <button class="min-h-9 cursor-pointer px-2 text-xs text-muted hover:bg-surface hover:text-ink" type="button" data-remove-section>Remove</button>
+            </div>
+          </div>
+          <div class="grid gap-5">
+            <label class="grid gap-2 text-sm">Title<input class="h-11 border border-line bg-transparent px-3 outline-none focus:border-accent" name="sections.__INDEX__.title" required /></label>
+            <label class="grid gap-2 text-sm">Description<textarea class="min-h-24 border border-line bg-transparent p-3 outline-none focus:border-accent" name="sections.__INDEX__.description" required></textarea></label>
+            <div class="grid gap-5 sm:grid-cols-3">
+              <label class="grid gap-2 text-sm">Min hours<input class="h-11 border border-line bg-transparent px-3 outline-none focus:border-accent" type="number" name="sections.__INDEX__.min_hours" min="1" step="1" required data-min-hours /></label>
+              <label class="grid gap-2 text-sm">Max hours<input class="h-11 border border-line bg-transparent px-3 outline-none focus:border-accent" type="number" name="sections.__INDEX__.max_hours" min="1" step="1" data-max-hours /></label>
+              <label class="grid gap-2 text-sm">Price (€)<input class="h-11 border border-line bg-transparent px-3 outline-none focus:border-accent" type="number" name="sections.__INDEX__.price_euros" min="0" step="1" required data-price-euros /></label>
+            </div>
+            <p class="font-mono text-xs text-muted">Hourly: <output data-section-rate>—</output></p>
+          </div>
+        </fieldset>
+      </template>
+    </div>
+  </main>
+{% endblock %}

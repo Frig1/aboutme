@@ -8,7 +8,17 @@ use crate::{
     schema::{quote_sections, quotes},
 };
 
+mod admin;
+mod form;
+
+pub use admin::{
+    AdminQuoteListItem, RecipientView, delete, edit_form, list as admin_list, recipient, save,
+    toggle_visibility,
+};
+pub use form::QuoteForm;
+
 type QuoteResult<T> = Result<T, Box<dyn Error + Send + Sync>>;
+type SectionRow = (String, String, i32, Option<i32>, i64);
 
 pub struct QuoteListItem {
     pub id: String,
@@ -42,6 +52,7 @@ pub async fn list(auth: &Auth, user_id: String) -> QuoteResult<Vec<QuoteListItem
         let mut connection = auth::connection(&pool)?;
         let rows = quotes::table
             .filter(quotes::user_id.eq(user_id))
+            .filter(quotes::is_visible.eq(true))
             .order((quotes::updated_at.desc(), quotes::id.desc()))
             .select((
                 quotes::id,
@@ -53,15 +64,12 @@ pub async fn list(auth: &Auth, user_id: String) -> QuoteResult<Vec<QuoteListItem
 
         Ok(rows
             .into_iter()
-            .map(|(id, title, description, updated_at)| {
-                let reference = reference(&id);
-                QuoteListItem {
-                    id,
-                    reference,
-                    title,
-                    description,
-                    updated_at: date(updated_at),
-                }
+            .map(|(id, title, description, updated_at)| QuoteListItem {
+                reference: reference(&id),
+                id,
+                title,
+                description,
+                updated_at: date(updated_at),
             })
             .collect())
     })
@@ -79,6 +87,7 @@ pub async fn detail(
         let quote = quotes::table
             .filter(quotes::id.eq(&quote_id))
             .filter(quotes::user_id.eq(user_id))
+            .filter(quotes::is_visible.eq(true))
             .select((
                 quotes::title,
                 quotes::description,
@@ -90,18 +99,7 @@ pub async fn detail(
         let Some((title, description, created_at, updated_at)) = quote else {
             return Ok(None);
         };
-
-        let rows = quote_sections::table
-            .filter(quote_sections::quote_id.eq(&quote_id))
-            .order(quote_sections::position.asc())
-            .select((
-                quote_sections::title,
-                quote_sections::description,
-                quote_sections::estimate_min_minutes,
-                quote_sections::estimate_max_minutes,
-                quote_sections::price_cents,
-            ))
-            .load::<(String, String, i32, Option<i32>, i64)>(&mut connection)?;
+        let rows = section_rows(&mut connection, &quote_id)?;
         let total_cents = rows.iter().try_fold(0_i64, |total, row| {
             total
                 .checked_add(row.4)
@@ -132,6 +130,23 @@ pub async fn detail(
         }))
     })
     .await?
+}
+
+fn section_rows(
+    connection: &mut diesel::SqliteConnection,
+    quote_id: &str,
+) -> Result<Vec<SectionRow>, diesel::result::Error> {
+    quote_sections::table
+        .filter(quote_sections::quote_id.eq(quote_id))
+        .order(quote_sections::position.asc())
+        .select((
+            quote_sections::title,
+            quote_sections::description,
+            quote_sections::estimate_min_minutes,
+            quote_sections::estimate_max_minutes,
+            quote_sections::price_cents,
+        ))
+        .load(connection)
 }
 
 fn reference(id: &str) -> String {

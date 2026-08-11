@@ -41,6 +41,7 @@ type AuthResult<T> = Result<T, Box<dyn Error + Send + Sync>>;
 #[derive(Clone)]
 pub struct Auth {
     pool: DbPool,
+    admin_discord_id: String,
     client_id: String,
     client_secret: String,
     callback_url: RedirectUrl,
@@ -61,6 +62,7 @@ pub struct AccountView {
     pub display_name: String,
     pub avatar_url: Option<String>,
     pub initial: String,
+    pub is_admin: bool,
 }
 
 #[derive(Debug, Deserialize)]
@@ -92,7 +94,7 @@ struct NewSession<'a> {
 impl Auth {
     pub fn from_env() -> AuthResult<Self> {
         let database_url =
-            env::var("DATABASE_URL").unwrap_or_else(|_| "data/aboutme.sqlite3".into());
+            env::var("DATABASE_URL").unwrap_or_else(|_| "data/db.sqlite".into());
         if let Some(parent) = Path::new(&database_url)
             .parent()
             .filter(|path| !path.as_os_str().is_empty())
@@ -112,6 +114,7 @@ impl Auth {
 
         Ok(Self {
             pool,
+            admin_discord_id: env::var("ADMIN_DISCORD_ID")?,
             client_id: env::var("DISCORD_CLIENT_ID")?,
             client_secret: env::var("DISCORD_CLIENT_SECRET")?,
             callback_url: RedirectUrl::new(format!("{app_url}/auth/discord/callback"))?,
@@ -195,6 +198,7 @@ impl Auth {
         };
         let token_hash = hash(&token);
         let pool = self.pool.clone();
+        let admin_discord_id = self.admin_discord_id.clone();
 
         tokio::task::spawn_blocking(move || -> AuthResult<Option<AccountView>> {
             let mut connection = connection(&pool)?;
@@ -217,6 +221,7 @@ impl Auth {
                 avatar_url: avatar.map(|hash| {
                     format!("https://cdn.discordapp.com/avatars/{id}/{hash}.webp?size=64")
                 }),
+                is_admin: id == admin_discord_id,
                 display_name,
             }))
         })
@@ -378,19 +383,27 @@ pub(crate) fn connection(
 
 fn safe_return_to(path: &str) -> bool {
     path == "/quotes"
-        || path.strip_prefix("/quotes/").is_some_and(|id| {
-            id.len() == 36
-                && id
-                    .bytes()
-                    .all(|byte| byte.is_ascii_hexdigit() || byte == b'-')
-        })
+        || path == "/admin/quotes"
+        || path == "/admin/quotes/new"
+        || path
+            .strip_prefix("/admin/quotes/")
+            .and_then(|value| value.strip_suffix("/edit"))
+            .is_some_and(valid_id)
+        || path.strip_prefix("/quotes/").is_some_and(valid_id)
+}
+
+fn valid_id(id: &str) -> bool {
+    id.len() == 36
+        && id
+            .bytes()
+            .all(|byte| byte.is_ascii_hexdigit() || byte == b'-')
 }
 
 fn hash(value: &str) -> String {
     format!("{:x}", Sha256::digest(value.as_bytes()))
 }
 
-fn now() -> i64 {
+pub(crate) fn now() -> i64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .expect("system clock before Unix epoch")

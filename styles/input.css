@@ -63,6 +63,7 @@
   button, summary, a { -webkit-tap-highlight-color: transparent; }
   ::selection { @apply bg-accent text-white; }
   :focus-visible { @apply outline-2 outline-offset-4 outline-accent; }
+  #main:focus { outline: none; }
 }
 
 .has-tooltip .tooltip {

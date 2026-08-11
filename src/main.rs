@@ -6,6 +6,7 @@ use std::{
     sync::Arc,
 };
 
+mod admin;
 mod auth;
 mod quotes;
 mod schema;
@@ -125,6 +126,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         .route("/logout", post(logout))
         .route("/quotes", get(quotes_index))
         .route("/quotes/{id}", get(quote_detail))
+        .merge(admin::router())
         .nest_service("/static", ServeDir::new("static"))
         .with_state(state);
 

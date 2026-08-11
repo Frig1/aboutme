@@ -1,0 +1,15 @@
+<div class="flex items-center gap-3 border border-line bg-surface/40 p-3">
+  {% match recipient.avatar_url %}
+    {% when Some with (avatar_url) %}
+      <img class="size-9 shrink-0 rounded-full bg-surface object-cover" src="{{ avatar_url }}" alt="" width="36" height="36" referrerpolicy="no-referrer" />
+    {% when None %}
+      <span class="grid size-9 shrink-0 place-items-center rounded-full bg-surface font-mono text-xs" aria-hidden="true">{{ recipient.initial }}</span>
+  {% endmatch %}
+  <div class="min-w-0">
+    {% match recipient.display_name %}
+      {% when Some with (display_name) %}<p class="truncate text-sm font-medium">{{ display_name }}</p>
+      {% when None %}<p class="truncate text-sm text-muted">Account not connected yet</p>
+    {% endmatch %}
+    <p class="mt-0.5 truncate font-mono text-xs text-muted">{{ recipient.discord_id }}</p>
+  </div>
+</div>

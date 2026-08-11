@@ -39,7 +39,9 @@
             <a class="flex min-h-12 items-center text-lg" href="/#about">About</a>
             <a class="flex min-h-12 items-center text-lg" href="/#contact">Contact</a>
             {% match account %}
-              {% when Some with (_) %}<a class="flex min-h-12 items-center text-lg" href="/quotes" hx-boost="true">Quotes</a>
+              {% when Some with (user) %}
+                <a class="flex min-h-12 items-center text-lg" href="/quotes" hx-boost="true">Quotes</a>
+                {% if user.is_admin %}<a class="flex min-h-12 items-center text-lg" href="/admin/quotes" hx-boost="true">Dashboard</a>{% endif %}
               {% when None %}
             {% endmatch %}
           </nav>
@@ -47,7 +49,7 @@
       </div>
     </header>
 
-    <div class="mx-auto w-full max-w-5xl px-5 md:flex md:gap-12 md:px-6 lg:gap-16" hx-target="#main" hx-select="#main" hx-swap="outerHTML show:window:top">
+    <div class="mx-auto w-full max-w-5xl px-5 data-wide:max-w-none md:flex md:gap-12 md:px-6 md:data-wide:px-8 lg:gap-16 lg:data-wide:px-12" data-shell hx-target="#main" hx-select="#main" hx-swap="outerHTML show:window:top">
       <aside class="sticky top-0 hidden h-screen w-32 shrink-0 flex-col justify-between py-12 md:flex lg:w-44" aria-label="Site navigation">
         <div>
           <a class="inline-flex text-lg font-semibold tracking-tight" href="/" hx-boost="true" aria-label="Frig, home">Frig<span class="text-accent">.</span></a>
@@ -58,7 +60,9 @@
             <a class="flex h-10 items-center text-sm text-muted transition-colors duration-150" data-section="about" data-nav-link href="/#about">About</a>
             <a class="flex h-10 items-center text-sm text-muted transition-colors duration-150" data-section="contact" data-nav-link href="/#contact">Contact</a>
             {% match account %}
-              {% when Some with (_) %}<a class="flex h-10 items-center text-sm text-muted transition-colors duration-150" data-section="quotes" data-nav-link href="/quotes" hx-boost="true">Quotes</a>
+              {% when Some with (user) %}
+                <a class="flex h-10 items-center text-sm text-muted transition-colors duration-150" data-section="quotes" data-nav-link href="/quotes" hx-boost="true">Quotes</a>
+                {% if user.is_admin %}<a class="flex h-10 items-center text-sm text-muted transition-colors duration-150" data-section="admin" data-nav-link href="/admin/quotes" hx-boost="true">Dashboard</a>{% endif %}
               {% when None %}
             {% endmatch %}
           </nav>

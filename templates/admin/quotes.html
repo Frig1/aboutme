@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block head_meta %}<meta name="robots" content="noindex, nofollow" />{% endblock %}
+{% block title %}Quote dashboard — Frig{% endblock %}
+{% block main %}
+  <main class="min-w-0 flex-1" id="main" tabindex="-1" hx-history-elt hx-history="false">
+    <div class="py-16 md:py-24">
+      <header class="mb-12 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p class="m-0 font-mono text-xs tracking-wide text-muted">Admin area</p>
+          <h1 class="mt-5 text-4xl leading-none font-medium tracking-tight md:text-5xl">Quote dashboard</h1>
+          <p class="mt-5 max-w-xl leading-relaxed text-muted">Manage recipients, estimates, pricing, and visibility.</p>
+        </div>
+        <a class="inline-flex min-h-11 items-center justify-center bg-ink px-5 text-sm font-medium text-canvas transition-opacity hover:opacity-80" href="/admin/quotes/new" hx-boost="true">New quote</a>
+      </header>
+
+      {% if quotes.is_empty() %}
+        <section class="border-y border-line py-16 text-center" aria-labelledby="empty-title">
+          <p class="font-mono text-xs text-muted">No documents</p>
+          <h2 class="mt-4 text-2xl font-medium tracking-tight" id="empty-title">No quotes yet.</h2>
+        </section>
+      {% else %}
+        <div class="overflow-x-auto border-y border-line">
+          <table class="w-full min-w-4xl text-left text-sm">
+            <thead class="font-mono text-xs text-muted">
+              <tr class="border-b border-line">
+                <th class="px-3 py-4 font-normal">Quote</th>
+                <th class="px-3 py-4 font-normal">Recipient</th>
+                <th class="px-3 py-4 font-normal">Status</th>
+                <th class="px-3 py-4 text-right font-normal">Total</th>
+                <th class="px-3 py-4 text-right font-normal">Hourly</th>
+                <th class="px-3 py-4 font-normal">Updated</th>
+                <th class="px-3 py-4 text-right font-normal">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for quote in quotes %}
+                <tr class="border-b border-line last:border-0" data-rate-total data-price="{{ quote.total_euros }}" data-min="{{ quote.min_hours }}"{% match quote.max_hours %}{% when Some with (maximum) %} data-max="{{ maximum }}"{% when None %}{% endmatch %}>
+                  <td class="px-3 py-5">
+                    <a class="font-medium transition-colors hover:text-accent" href="/admin/quotes/{{ quote.id }}/edit" hx-boost="true">{{ quote.title }}</a>
+                    <p class="mt-1 font-mono text-xs text-muted">{{ quote.reference }}</p>
+                  </td>
+                  <td class="px-3 py-5">
+                    <div class="flex items-center gap-2.5">
+                      {% match quote.recipient_avatar %}
+                        {% when Some with (avatar_url) %}<img class="size-7 rounded-full bg-surface object-cover" src="{{ avatar_url }}" alt="" width="28" height="28" referrerpolicy="no-referrer" />
+                        {% when None %}<span class="grid size-7 place-items-center rounded-full bg-surface font-mono text-xs" aria-hidden="true">{{ quote.recipient_initial }}</span>
+                      {% endmatch %}
+                      <span class="max-w-36 truncate">{{ quote.recipient_name }}</span>
+                    </div>
+                  </td>
+                  <td class="px-3 py-5"><span class="font-mono text-xs {% if quote.is_visible %}text-accent{% else %}text-red-500{% endif %}">{% if quote.is_visible %}Visible{% else %}Hidden{% endif %}</span></td>
+                  <td class="px-3 py-5 text-right font-medium tabular-nums">€ {{ quote.total_euros }},00</td>
+                  <td class="whitespace-nowrap px-3 py-5 text-right font-mono text-xs text-muted" data-rate-output>—</td>
+                  <td class="whitespace-nowrap px-3 py-5 font-mono text-xs text-muted">{{ quote.updated_at }}</td>
+                  <td class="px-3 py-5">
+                    <div class="flex justify-end gap-1">
+                      <a class="inline-flex min-h-9 items-center px-3 text-xs hover:bg-surface" href="/admin/quotes/{{ quote.id }}/edit" hx-boost="true">Edit</a>
+                      <form action="/admin/quotes/{{ quote.id }}/visibility" method="post" hx-boost="true"><button class="min-h-9 cursor-pointer px-3 text-xs hover:bg-surface" type="submit">{% if quote.is_visible %}Hide{% else %}Show{% endif %}</button></form>
+                      <form action="/admin/quotes/{{ quote.id }}/delete" method="post" hx-boost="true" hx-confirm="Delete this quote permanently?"><button class="min-h-9 cursor-pointer px-3 text-xs text-muted hover:bg-surface hover:text-ink" type="submit">Delete</button></form>
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+    </div>
+  </main>
+{% endblock %}

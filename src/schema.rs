@@ -22,6 +22,7 @@ diesel::table! {
         user_id -> Text,
         title -> Text,
         description -> Text,
+        is_visible -> Bool,
         created_at -> BigInt,
         updated_at -> BigInt,
     }
