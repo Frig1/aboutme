@@ -27,25 +27,16 @@ themeToggles.forEach((toggle) =>
   }),
 );
 
-const revealObserver = new IntersectionObserver(
-  (entries) => entries.forEach((entry) => entry.isIntersecting && (entry.target.dataset.visible = "true")),
-  { threshold: 0.16 },
-);
-document.querySelectorAll("[data-reveal]").forEach((element) => revealObserver.observe(element));
+let revealObserver;
+let sectionObserver;
 
-const navLinks = [...document.querySelectorAll("[data-nav-link]")];
-const indicator = document.querySelector("[data-nav-indicator]");
-const sectionObserver = new IntersectionObserver(
-  (entries) => {
-    const current = entries.find((entry) => entry.isIntersecting);
-    if (!current) return;
-    const index = navLinks.findIndex((link) => link.dataset.section === current.target.id);
-    navLinks.forEach((link, linkIndex) => (link.dataset.active = linkIndex === index));
-    indicator.style.transform = `translateY(${index * 40}px)`;
-  },
-  { rootMargin: "-35% 0px -55%", threshold: 0 },
-);
-document.querySelectorAll("main > section[id]").forEach((section) => sectionObserver.observe(section));
+function activateNavigation(section) {
+  const links = [...document.querySelectorAll("[data-nav-link]")];
+  const index = links.findIndex((link) => link.dataset.section === section);
+  if (index < 0) return;
+  links.forEach((link, linkIndex) => (link.dataset.active = linkIndex === index));
+  document.querySelector("[data-nav-indicator]").style.transform = `translateY(${index * 40}px)`;
+}
 
 function updateClock() {
   const time = new Intl.DateTimeFormat("en-GB", {
@@ -57,8 +48,63 @@ function updateClock() {
 }
 updateClock();
 setInterval(updateClock, 30_000);
-document.querySelectorAll("[data-year]").forEach((element) => (element.textContent = new Date().getFullYear()));
+
+function initMain(focus = false) {
+  revealObserver?.disconnect();
+  sectionObserver?.disconnect();
+
+  revealObserver = new IntersectionObserver(
+    (entries) => entries.forEach((entry) => entry.isIntersecting && (entry.target.dataset.visible = "true")),
+    { threshold: 0.16 },
+  );
+  document.querySelectorAll("#main [data-reveal]").forEach((element) => revealObserver.observe(element));
+  document.querySelectorAll("[data-year]").forEach((element) => (element.textContent = new Date().getFullYear()));
+  updateClock();
+
+  if (location.pathname.startsWith("/quotes")) {
+    activateNavigation("quotes");
+  } else {
+    const section = location.hash.slice(1) || "home";
+    if (!location.hash) {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }
+    activateNavigation(section);
+    sectionObserver = new IntersectionObserver(
+      (entries) => {
+        const current = entries.find((entry) => entry.isIntersecting);
+        if (current) activateNavigation(current.target.id);
+      },
+      { rootMargin: "-35% 0px -55%", threshold: 0 },
+    );
+    document.querySelectorAll("#main > section[id]").forEach((section) => sectionObserver.observe(section));
+    if (location.hash) {
+      requestAnimationFrame(() => {
+        document.querySelector(location.hash)?.scrollIntoView();
+        activateNavigation(section);
+      });
+    }
+  }
+
+  if (focus) document.querySelector("#main")?.focus({ preventScroll: true });
+}
+
+initMain();
+document.addEventListener("htmx:afterSettle", (event) => {
+  if (event.detail.target?.id === "main") initMain(true);
+});
+document.addEventListener("htmx:historyRestore", () => setTimeout(() => initMain(), 50));
+window.addEventListener("popstate", () => setTimeout(() => initMain(), 50));
 
 document.querySelectorAll("[data-mobile-menu] a").forEach((link) =>
   link.addEventListener("click", () => link.closest("details").removeAttribute("open")),
+);
+
+document.querySelectorAll("[popovertarget]").forEach((button) =>
+  button.addEventListener("click", () => {
+    const popover = document.getElementById(button.getAttribute("popovertarget"));
+    const rect = button.getBoundingClientRect();
+    popover.style.top = `${rect.bottom + 4}px`;
+    popover.style.left = `${Math.max(16, Math.min(rect.left, innerWidth - 192))}px`;
+  }),
 );
