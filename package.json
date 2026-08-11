@@ -4,7 +4,9 @@
   "scripts": {
     "dev": "concurrently --kill-others -n css,server -c cyan,magenta \"tailwindcss -i ./styles/input.css -o ./static/app.css --watch --poll=200\" \"cargo watch --poll -w src -w templates -w content -w static -x run\"",
     "build:css": "tailwindcss -i ./styles/input.css -o ./static/app.css --minify",
-    "watch:css": "tailwindcss -i ./styles/input.css -o ./static/app.css --watch --poll=200"
+    "watch:css": "tailwindcss -i ./styles/input.css -o ./static/app.css --minify --watch --poll=200",
+    "docker:up": "docker compose -f compose.yml up -d",
+    "docker:down": "docker compose -f compose.yml down"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.11",

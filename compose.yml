@@ -1,0 +1,19 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    expose:
+      - ${PORT:-3000}
+    environment:
+      ADDRESS: 0.0.0.0:3000
+      DATABASE_URL: /app/data/db.sqlite
+      APP_URL: ${APP_URL}
+      MCP_TOKEN: ${MCP_TOKEN}
+      ADMIN_DISCORD_ID: ${ADMIN_DISCORD_ID}
+      DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID}
+      DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET}
+    volumes:
+      - aboutme_data:/app/data
+
+volumes:
+  aboutme_data:
