@@ -47,6 +47,7 @@ struct IndexTemplate<'a> {
     account: Option<auth::AccountView>,
     auth_error: bool,
     auth_cancelled: bool,
+    production: bool,
 }
 
 #[derive(Template)]
@@ -158,6 +159,7 @@ async fn index(
         account,
         auth_error: query.auth.as_deref() == Some("error"),
         auth_cancelled: query.auth.as_deref() == Some("cancelled"),
+        production: !cfg!(debug_assertions),
     }
     .render()
     .map_err(|error| {

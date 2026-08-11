@@ -1,7 +1,23 @@
 {% extends "base.html" %}
 {% import "components/links.html" as links %}
 
-{% block head_meta %}<meta name="description" content="Frig is a full-stack developer creating calm, thoughtful digital experiences." />{% endblock %}
+{% block head_meta %}
+<meta name="description" content="Frig is a full-stack developer creating calm, thoughtful digital experiences." />
+<link rel="canonical" href="https://frig.dev/" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://frig.dev/" />
+<meta property="og:site_name" content="Frig" />
+<meta property="og:title" content="Frig — Developer &amp; Tinkerer" />
+<meta property="og:description" content="Full-stack developer creating calm, thoughtful digital experiences." />
+<meta property="og:image" content="https://frig.dev/static/favicon.ico" />
+<meta property="og:image:alt" content="Frig" />
+<meta property="og:locale" content="en_US" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Frig — Developer &amp; Tinkerer" />
+<meta name="twitter:description" content="Full-stack developer creating calm, thoughtful digital experiences." />
+<meta name="twitter:image" content="https://frig.dev/static/favicon.ico" />
+{% if production %}<script defer data-domain="frig.dev" src="https://analytics.frig.dev/js/script.js"></script>{% endif %}
+{% endblock %}
 {% block title %}Frig — Developer & Tinkerer{% endblock %}
 {% block main %}
       <main class="min-w-0 max-w-3xl flex-1" id="main" tabindex="-1" hx-history-elt>
