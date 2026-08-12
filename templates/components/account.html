@@ -2,7 +2,7 @@
   <div class="{{ modifier }}">
     {% match account %}
       {% when Some with (user) %}
-        <button class="flex min-h-11 max-w-36 cursor-pointer items-center gap-2 border-0 bg-transparent p-0 font-sans text-sm text-ink" type="button" popovertarget="{{ menu_id }}" aria-label="Open account menu">
+        <button class="flex min-h-11 w-full cursor-pointer items-center gap-2 border-0 bg-transparent [:hover,:has(+[popover]:popover-open)]:bg-surface p-0 [:hover,:has(+[popover]:popover-open)]:p-2 transition-all font-sans text-sm text-ink" type="button" popovertarget="{{ menu_id }}" aria-label="Open account menu">
           {% match user.avatar_url %}
             {% when Some with (avatar_url) %}
               <img class="size-7 shrink-0 rounded-full bg-surface object-cover" src="{{ avatar_url }}" alt="" width="28" height="28" referrerpolicy="no-referrer" />
